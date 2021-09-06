@@ -8,7 +8,6 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const checkToken=require('./authenticate');
 
-
 const User=require('./models/user');
 const app=express();
 app.use(cors())

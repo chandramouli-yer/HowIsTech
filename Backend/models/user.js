@@ -10,4 +10,5 @@ const userSchema=mongoose.Schema({
     updatedAt:{type:Date,required:true}
 });
 
+
 module.exports=mongoose.model('User',userSchema);
