@@ -8,8 +8,9 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 import CopyRight from '../CopyRight/CopyRight';
-import axios from 'axios'
 import { SignupApi } from '../../utils/const.dev';
 
 const useStyles = makeStyles((theme) => ({
@@ -20,35 +21,30 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   form: {
-    width: '100%', 
+    width: '100%',
     marginTop: theme.spacing(3),
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
 }));
-
-const  SignUp=()=> {
-
-  const callSignupApi=async()=>{
-    
-    const response=await axios.post(SignupApi,{
-      firstName:firstName,
-      lastName:lastName,
-      email:email,
-      password:password
-
-    })
-    console.log(response)
-    setResponse(response.data.message)
-  }
-
-
-  const [firstName,setFirstName]=useState('');
-  const [lastName,setLastName]=useState('');
-  const [email,setEmail]=useState('');
-    const [password,setPassword]=useState('');
-    const [apiResponse,setResponse]=useState('');
+const SignUp = () => {
+  const history = useHistory();
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [apiResponse, setResponse] = useState('');
+  const callSignupApi = async () => {
+    const response = await axios.post(SignupApi, {
+      firstName,
+      lastName,
+      email,
+      password,
+    });
+    setResponse(response.data.message);
+    history.push('/home');
+  };
 
   const classes = useStyles();
 
@@ -72,7 +68,7 @@ const  SignUp=()=> {
                 label="First Name"
                 autoFocus
                 value={firstName}
-                onChange={(e)=>setFirstName(e.target.value)}
+                onChange={(e) => setFirstName(e.target.value)}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -85,7 +81,7 @@ const  SignUp=()=> {
                 name="lastName"
                 autoComplete="lname"
                 value={lastName}
-                onChange={(e)=>setLastName(e.target.value)}
+                onChange={(e) => setLastName(e.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -98,7 +94,7 @@ const  SignUp=()=> {
                 name="email"
                 autoComplete="email"
                 value={email}
-                onChange={(e)=>setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -112,7 +108,7 @@ const  SignUp=()=> {
                 id="password"
                 autoComplete="current-password"
                 value={password}
-                onChange={(e)=>setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -124,7 +120,7 @@ const  SignUp=()=> {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={()=>callSignupApi()}
+            onClick={() => callSignupApi()}
           >
             Sign Up
           </Button>
@@ -142,8 +138,7 @@ const  SignUp=()=> {
       </Box>
       <p>{apiResponse}</p>
     </Container>
-   
   );
-}
+};
 
 export default SignUp;
