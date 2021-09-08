@@ -16,7 +16,7 @@ import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import CopyRight from '../CopyRight/CopyRight';
-import { LoginApi } from '../../utils/const.dev';
+import { LoginApi, ForgotEmailApi } from '../../utils/const.dev';
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     height: '100vh',
   },
   image: {
-    backgroundImage: 'url("http://drive.google.com/uc?export=view&id=1JUkiG7b0fIdNrmS7qZA6-IA__xPVCO2Z")',
+    backgroundImage: 'url("http://drive.google.com/uc?export=view&id=1R1RTMNCLLnkirg_a_5dITRSFfar7ngPI")',
     backgroundRepeat: 'no-repeat',
     backgroundColor:
       theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
@@ -62,15 +62,36 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [apiResponse, setResponse] = useState('');
-
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [passwordForgotMessage, setPasswordForgotMessage] = useState('Forgot Password ? No worries');
   const [open, setOpen] = React.useState(false);
-
-  const handleOpen = () => {
-    setOpen(true);
+  const [openOtp, setOpenOtp] = React.useState(false);
+  const [responseMessage, setResponseMessage] = useState('');
+  const handleOpenOtp = () => {
+    setOpenOtp(true);
+  };
+  const handleClosePassword = () => {
+    setOpen(false);
+  };
+  const onForgotPassword = async () => {
+    await axios.post(ForgotEmailApi, {
+      forgotEmail,
+    }).then(() => {
+      setPasswordForgotMessage(`Enter the OTP sent to ${forgotEmail}`);
+      handleClosePassword();
+      handleOpenOtp();
+    })
+      .catch(() => {
+        setResponseMessage('You are not registered with us.');
+      });
+    // setForgotEmail(response.message);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleOpenPassword = () => {
+    setOpen(true);
+  };
+  const handleCloseOtp = () => {
+    setOpenOtp(false);
   };
   const callSignIn = async () => {
     const response = await axios.post(LoginApi, {
@@ -79,6 +100,10 @@ const Login = () => {
     });
     setResponse(response.data.message);
     history.push('/home');
+  };
+  const onOtpEnter = () => {
+    // eslint-disable-next-line
+    alert('Hurray');
   };
   const classes = useStyles();
 
@@ -90,7 +115,7 @@ const Login = () => {
           aria-describedby="transition-modal-description"
           className={classes.modal}
           open={open}
-          onClose={handleClose}
+          onClose={handleClosePassword}
           closeAfterTransition
           BackdropComponent={Backdrop}
           BackdropProps={{
@@ -98,13 +123,55 @@ const Login = () => {
           }}>
           <Fade in={open}>
             <div className={classes.paperModal}>
-              <h5 id="transition-modal-title">Forgot Password?No worries</h5>
+              <h3 id="transition-modal-title">{passwordForgotMessage}</h3>
+              {/* <p id="transition-modal-description">react-transition-group animates me.</p> */}
+              <form className={classes.root1} autoComplete="off">
+                <TextField
+                  id='standard-basic'
+                  label='Registered Email'
+                  type="email"
+                  onChange={(e) => setForgotEmail(e.target.value)} />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={!forgotEmail}
+                  onClick={() => onForgotPassword()}
+                > Send
+                </Button>
+                <p>{responseMessage}</p>
+              </form>
+            </div>
+          </Fade>
+        </Modal>
+        <Modal
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          className={classes.modal}
+          open={openOtp}
+          onClose={handleCloseOtp}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}>
+          <Fade in={openOtp}>
+            <div className={classes.paperModal}>
+              <h5 id="transition-modal-title">{passwordForgotMessage}</h5>
               {/* <p id="transition-modal-description">react-transition-group animates me.</p> */}
               <form className={classes.root1} noValidate autoComplete="off">
-                <TextField id="standard-basic" label="Registered Email" />
-                <Button variant="contained" color="primary"> Send</Button>
+                <TextField
+                  id='standard-basic'
+                  label='Enter OTP'
+                 // onChange={(e) => setForgotEmail((e.target.value).toLowerCase)}
+                  />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={!forgotEmail}
+                  onClick={() => onOtpEnter()}
+                > Send
+                </Button>
               </form>
-
             </div>
           </Fade>
         </Modal>
@@ -128,7 +195,7 @@ const Login = () => {
               autoComplete="email"
               autoFocus
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setEmail((e.target.value).toLowerCase())}
 
             />
             <TextField
@@ -161,7 +228,7 @@ const Login = () => {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" onClick={handleOpen} variant="body2">
+                <Link href="#" onClick={handleOpenPassword} variant="body2">
                   Forgot password?
                 </Link>
               </Grid>

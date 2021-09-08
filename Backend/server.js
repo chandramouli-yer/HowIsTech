@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const port=process.env||9000;
+const PORT=process.env.PORT||9000;
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const cors=require('cors');
@@ -117,7 +117,26 @@ app.post('/register',(req,res)=>{
 });
 
 
+app.post("/forgotPassword",(req,res)=>{
+    console.log(req.body.forgotEmail);
+    User.find({email:req.body.forgotEmail}).exec().then(user=>{
+        console.log("Inside user",user)
+        if(user.length!=0){
+            return res.status(201).json({
+                message:"Email Id is registered with us"
+            })
+        }
+        else{  
+            return res.status(409).json({
+                message:"Email Id is not registered.Consider registering"
+            })
 
-app.listen(9001,()=>{
+        }
+    });
+})
+
+
+
+app.listen(PORT,()=>{
     console.log("Sever started ");
 })

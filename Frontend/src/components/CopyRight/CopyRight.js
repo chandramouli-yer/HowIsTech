@@ -5,8 +5,8 @@ import Link from '@material-ui/core/Link';
 const CopyRight = () => (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Product
+      <Link color="inherit" href="http://localhost:3000">
+        HowIsTech
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
