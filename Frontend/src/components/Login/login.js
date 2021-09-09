@@ -9,64 +9,26 @@ import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import CopyRight from '../CopyRight/CopyRight';
-import { LoginApi, ForgotEmailApi } from '../../utils/const.dev';
-
-const useStyles = makeStyles((theme) => ({
-  modal: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  root: {
-    height: '100vh',
-  },
-  image: {
-    backgroundImage: 'url("http://drive.google.com/uc?export=view&id=1R1RTMNCLLnkirg_a_5dITRSFfar7ngPI")',
-    backgroundRepeat: 'no-repeat',
-    backgroundColor:
-      theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-  },
-  paper: {
-    margin: theme.spacing(8, 4),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-
-  },
-  paperModal: {
-    backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-  form: {
-    width: '100%',
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-}));
+import {ForgotEmailApi } from '../../utils/const.dev';
+import { useStyles } from './styles/styles';
+import { callSignIn } from './hooks/callSignIn';
 
 const Login = () => {
   const history = useHistory();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [apiResponse, setResponse] = useState('');
   const [forgotEmail, setForgotEmail] = useState('');
   const [passwordForgotMessage, setPasswordForgotMessage] = useState('Forgot Password ? No worries');
   const [open, setOpen] = React.useState(false);
   const [openOtp, setOpenOtp] = React.useState(false);
   const [responseMessage, setResponseMessage] = useState('');
+  
   const handleOpenOtp = () => {
     setOpenOtp(true);
   };
@@ -93,14 +55,7 @@ const Login = () => {
   const handleCloseOtp = () => {
     setOpenOtp(false);
   };
-  const callSignIn = async () => {
-    const response = await axios.post(LoginApi, {
-      email,
-      password,
-    });
-    setResponse(response.data.message);
-    history.push('/home');
-  };
+ 
   const onOtpEnter = () => {
     // eslint-disable-next-line
     alert('Hurray');
@@ -130,15 +85,15 @@ const Login = () => {
                   id='standard-basic'
                   label='Registered Email'
                   type="email"
-                  onChange={(e) => setForgotEmail(e.target.value)} />
+                  onChange={(e) => setForgotEmail(e.target.value)} /> <br /><br />
                 <Button
-                  variant="contained"
+                  variant='contained'
                   color="primary"
                   disabled={!forgotEmail}
                   onClick={() => onForgotPassword()}
                 > Send
                 </Button>
-                <p>{responseMessage}</p>
+                <p className={classes.error}>{responseMessage}</p>
               </form>
             </div>
           </Fade>
@@ -162,8 +117,8 @@ const Login = () => {
                 <TextField
                   id='standard-basic'
                   label='Enter OTP'
-                 // onChange={(e) => setForgotEmail((e.target.value).toLowerCase)}
-                  />
+                // onChange={(e) => setForgotEmail((e.target.value).toLowerCase)}
+                />
                 <Button
                   variant="contained"
                   color="primary"
@@ -221,7 +176,13 @@ const Login = () => {
               variant="contained"
               color="primary"
               className={classes.submit}
-              onClick={() => callSignIn()}
+              onClick={() => 
+                (callSignIn(email,password)
+                .then((res)=>
+                {
+                  console.log(res);
+                  if(res.status===200) history.push('/home')
+                }))}
               disabled={!(email !== '' && password !== '')}
             >
               Sign In
@@ -235,11 +196,10 @@ const Login = () => {
               <Grid item>
                 <Link href="/signup" variant="body2">
                   {"Don't have an account? Sign Up"}
-                  <p>{apiResponse}</p>
                 </Link>
               </Grid>
             </Grid>
-            <Box mt={5}>
+            <Box mt={5} className={classes.Box}>
               <CopyRight />
             </Box>
           </form>

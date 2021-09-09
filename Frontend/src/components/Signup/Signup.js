@@ -6,46 +6,19 @@ import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import CopyRight from '../CopyRight/CopyRight';
-import { SignupApi } from '../../utils/const.dev';
+import { useStyles } from './styles/styles'
+import { callSignupApi } from './hooks/callSignup';
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  form: {
-    width: '100%',
-    marginTop: theme.spacing(3),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-}));
 const SignUp = () => {
   const history = useHistory();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [apiResponse, setResponse] = useState('');
-  const callSignupApi = async () => {
-    const response = await axios.post(SignupApi, {
-      firstName,
-      lastName,
-      email,
-      password,
-    });
-    setResponse(response.data.message);
-    history.push('/home');
-  };
-
+  
   const classes = useStyles();
 
   return (
@@ -120,7 +93,14 @@ const SignUp = () => {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={() => callSignupApi()}
+            onClick={() => 
+              callSignupApi(firstName,lastName,email,password)
+              .then(res=>{
+                if(res.status===201){
+                  history.push('/home')
+                }
+              })
+            }
           >
             Sign Up
           </Button>
@@ -133,10 +113,10 @@ const SignUp = () => {
           </Grid>
         </form>
       </div>
-      <Box mt={5}>
+      <Box mt={5} className={classes.Box}>
         <CopyRight />
       </Box>
-      <p>{apiResponse}</p>
+      {/* <p>{apiResponse}</p> */}
     </Container>
   );
 };
